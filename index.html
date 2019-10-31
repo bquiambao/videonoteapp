@@ -5,7 +5,37 @@
     </head>
     <body>
         <h1> Video Note Application </h1>
-        <input type="text" placeholder="Paste a YouTube video URL!">
-        <input type="submit" value="Search">
+
+        <!-- Search bar and button for youtube videos -->
+        <input type="text" placeholder="Paste a YouTube video URL!" id="videoid">
+        <input type="submit" value="Search" id="searchbutton">
     </body>
+
+    <script>
+        // on search button click, create an iframe with embed of youtube video with the
+        // respective id
+        var search = document.getElementById("searchbutton");
+        search.onclick = function () {
+
+            var iframe = document.createElement("iframe");
+            var URL = getId(document.getElementById("videoid"));
+            iframe.setAttribute("src", "//www.youtube.com/embed/" + URL);
+            iframe.style.width = 640;
+            iframe.style.height = 390;
+            console.log("button is being clicked");
+        }
+
+        // Source : http://jsfiddle.net/isherwood/cH6e8/
+        // Function to extract unique 11 char YouTube video id
+        function getId(url) {
+            var regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|\&v=)([^#\&\?]*).*/;
+            var match = url.match(regExp);
+
+            if (match && match[2].length == 11) {
+                return match[2];
+            } else {
+                return 'error';
+            }
+        }
+    </script>
 </html>
