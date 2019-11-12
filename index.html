@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <title> Video Note Application </title>
+        <title> FrameNotes </title>
+        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
     </head>
     <body>
-        <h1> Video Note Application </h1>
+        <h1> FrameNotes </h1>
 
         <!-- Search bar and button for youtube videos -->
         <input type="text" placeholder="Paste a YouTube video URL!" id="videoid">
@@ -18,11 +19,11 @@
         search.onclick = function () {
 
             var iframe = document.createElement("iframe");
-            var URL = getId(document.getElementById("videoid"));
-            iframe.setAttribute("src", "//www.youtube.com/embed/" + URL);
-            iframe.style.width = 640;
-            iframe.style.height = 390;
-            console.log("button is being clicked");
+            var URL = getId(document.getElementById("videoid").value);
+            iframe.setAttribute("src", "http://www.youtube.com/embed/" + URL);
+            iframe.style.width = 1920;
+            iframe.style.height = 1080;
+            document.body.appendChild(iframe);
         }
 
         // Source : http://jsfiddle.net/isherwood/cH6e8/
