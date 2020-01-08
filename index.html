@@ -2,29 +2,66 @@
 <html>
     <head>
         <title> FrameNotes </title>
-        <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.7.8/angular.min.js"></script>
     </head>
     <body>
         <h1> FrameNotes </h1>
 
+        <!-- Iframe container for YouTube video -->
+        <div id="player">
+            </div>
+
         <!-- Search bar and button for youtube videos -->
-        <input type="text" placeholder="Paste a YouTube video URL!" id="videoid">
-        <input type="submit" value="Search" id="searchbutton">
+        <div id="initial">
+            <input type="text" placeholder="Paste a YouTube video URL!" size="35" id="videoid">
+            <input type="submit" value="Search" id="searchbutton" onclick = searchVideo()>
+        </div>
+
+        <!-- Section containing notes attached to timestamps -->
+        <div id="notes" hidden>
+            <button type="button" onclick="addTimestamp()"> Add a note at the current timestamp </button>
+        </div>
+
     </body>
 
     <script>
-        // on search button click, create an iframe with embed of youtube video with the
-        // respective id
-        var search = document.getElementById("searchbutton");
-        search.onclick = function () {
 
-            var iframe = document.createElement("iframe");
-            var URL = getId(document.getElementById("videoid").value);
-            iframe.setAttribute("src", "http://www.youtube.com/embed/" + URL);
-            iframe.style.width = 1920;
-            iframe.style.height = 1080;
-            document.body.appendChild(iframe);
+        var tag = document.createElement('script');
+        tag.src = 'https://www.youtube.com/iframe_api';
+        var firstScriptTag = document.getElementsByTagName('script')[0];
+        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+
+        var player;
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('player', {
+                height: '480',
+                width: '854',
+                videoid: 'NpEaa2P7qZI',
+                events: {
+                    'onReady': onPlayerReady
+                }
+            });
         }
+
+        function onPlayerReady(event) {
+            event.target.playVideo();
+        }
+
+
+        // on search button click, load searched video using videoid and make notes appear 
+        // and search bar disappear
+        function searchVideo() {
+
+            var URL = getId(document.getElementById("videoid").value);
+            player.loadVideoById(URL);
+
+            var notes = document.getElementById("notes");
+            notes.hidden = false;
+
+            var initial = document.getElementById("initial");
+            initial.hidden = true; 
+
+        }
+
 
         // Source : http://jsfiddle.net/isherwood/cH6e8/
         // Function to extract unique 11 char YouTube video id
@@ -38,5 +75,29 @@
                 return 'error';
             }
         }
+
+        function addTimestamp() {
+
+            var timestamp = document.createElement("div");
+            var timelabel = document.createElement("h4");
+            timelabel.textContent = player.getCurrentTime();
+            var notes = document.getElementById('notes');
+            notes.appendChild(timelabel);
+
+        }
+
+        function convertToHMS(sec) {
+            var hours   = Math.floor(sec / 3600);
+            var minutes = Math.floor((sec - (hours * 3600)) / 60);
+            var seconds = sec - (hours * 3600) - (minutes * 60);
+
+            if (hours   < 10) {hours   = "0"+hours;}
+            if (minutes < 10) {minutes = "0"+minutes;}
+            if (seconds < 10) {seconds = "0"+seconds;}
+            return hours+':'+minutes+':'+seconds;
+
+        }
+
+
     </script>
 </html>
