@@ -2,6 +2,7 @@
 <html>
     <head>
         <title> FrameNotes </title>
+        <link rel='stylesheet' type='text/css' href='/framenotes.css'>
     </head>
     <body>
         <h1> FrameNotes </h1>
@@ -25,6 +26,7 @@
 
     <script>
 
+        // using YouTube Iframe API to load video based on user inputted youtube video URL
         var tag = document.createElement('script');
         tag.src = 'https://www.youtube.com/iframe_api';
         var firstScriptTag = document.getElementsByTagName('script')[0];
@@ -52,13 +54,16 @@
         function searchVideo() {
 
             var URL = getId(document.getElementById("videoid").value);
-            player.loadVideoById(URL);
 
-            var notes = document.getElementById("notes");
-            notes.hidden = false;
+            if(URL != 'error') {
+                player.loadVideoById(URL);
 
-            var initial = document.getElementById("initial");
-            initial.hidden = true; 
+                var notes = document.getElementById("notes");
+                notes.hidden = false;
+
+                var initial = document.getElementById("initial");
+                initial.hidden = true; 
+            }
 
         }
 
@@ -76,25 +81,58 @@
             }
         }
 
+        // add a section of notes labelled with the current timestamp of the player
         function addTimestamp() {
 
             var timestamp = document.createElement("div");
+
             var timelabel = document.createElement("h4");
-            timelabel.textContent = player.getCurrentTime();
+            timelabel.setAttribute('onclick', 'goToTimestamp(this)');
+            timelabel.setAttribute('class', 'timelabel');
+            timelabel.textContent = convertToHMS(player.getCurrentTime());
+            timestamp.appendChild(timelabel);
+
+            var addButton = document.createElement("button");
+            addButton.textContent = "+";
+            var delButton = document.createElement("button");
+            delButton.textContent = "Delete";
+            timestamp.appendChild(addButton);
+            timestamp.appendChild(delButton);
+
+            var points = document.createElement("ul");
+            timestamp.appendChild(points);
+
             var notes = document.getElementById('notes');
-            notes.appendChild(timelabel);
+            notes.appendChild(timestamp);
 
         }
 
+        // format raw number of seconds into HH:MM:SS format
         function convertToHMS(sec) {
             var hours   = Math.floor(sec / 3600);
             var minutes = Math.floor((sec - (hours * 3600)) / 60);
-            var seconds = sec - (hours * 3600) - (minutes * 60);
+            var seconds = Math.floor(sec - (hours * 3600) - (minutes * 60));
 
             if (hours   < 10) {hours   = "0"+hours;}
             if (minutes < 10) {minutes = "0"+minutes;}
             if (seconds < 10) {seconds = "0"+seconds;}
             return hours+':'+minutes+':'+seconds;
+
+        }
+
+        // get raw number in seconds from HH:MM:SS format
+        function convertToSeconds(HMS) {
+
+            var split = HMS.split(':');
+            return parseFloat(split[0] * 3600) + parseFloat(split[1] * 60) + parseFloat(split[2]);
+            
+        }
+
+        // click on a timestamp to go that part of the video in the YouTube Player
+        function goToTimestamp(time) {
+
+            var timeInSec = convertToSeconds(time.textContent);
+            player.seekTo(timeInSec, true);
 
         }
 
